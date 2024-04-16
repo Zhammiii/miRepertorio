@@ -11,18 +11,21 @@ export async function getCanciones(req, res) {
 }
 
 export async function crearCancion(req, res) {
-  const { titulo, artista, tono } = req.body;
-
-  try {
-    const query =
-      "INSERT INTO canciones (titulo, artista, tono) VALUES ($1, $2, $3) RETURNING *";
-    const values = [titulo, artista, tono];
-    const result = await pool.query(query, values);
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: "Error al insertar la canción en la base de datos" });
+    const { titulo, artista, tono } = req.body;
+    if (!titulo || !artista || !tono) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios" });
+    }
+  
+    try {
+      const query =
+        "INSERT INTO canciones (titulo, artista, tono) VALUES ($1, $2, $3) RETURNING *";
+      const values = [titulo, artista, tono];
+      const result = await pool.query(query, values);
+      res.json(result.rows[0]);
+    } catch (error) {
+      res.status(500).json({ error: "Error al insertar la canción en la base de datos" });
+    }
   }
-}
 
 export async function editarCancion(req, res) {
   const { id } = req.params;
